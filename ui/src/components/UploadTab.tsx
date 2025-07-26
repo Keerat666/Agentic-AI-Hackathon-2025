@@ -53,7 +53,17 @@ const recentTransactions = [
   }
 ];
 
-export default function UploadTab() {
+interface User {
+  name: string;
+  email: string;
+  picture: string;
+}
+
+interface UserProps {
+  user : User
+}
+
+export default function UploadTab({user }: UserProps) {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [stream, setStream] = useState(null);
@@ -182,7 +192,7 @@ export default function UploadTab() {
           </div>
 
           <div className="p-3 bg-blue-100 text-blue-700 rounded-lg text-center text-xs break-words">
-            Your User ID: <span className="font-mono font-semibold">userId</span>
+            Your Mail ID: <span className="font-mono font-semibold">{user.email}</span>
           </div>
 
           {error && (

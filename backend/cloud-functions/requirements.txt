@@ -1,2 +1,4 @@
+--index-url https://pypi.org/simple/
+
 functions-framework
 gcloud

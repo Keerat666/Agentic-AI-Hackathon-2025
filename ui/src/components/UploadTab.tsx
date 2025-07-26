@@ -254,9 +254,8 @@ export default function UploadTab() {
               autoPlay
               playsInline
               muted
-              className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
-              style={{ transform: 'scaleX(-1)' }}
-            />
+              className="w-full max-h-[80vh] aspect-video object-contain rounded-lg"
+              />
             {!isUploading && stream && (
               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
                 <FinalButton

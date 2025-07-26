@@ -1,9 +1,9 @@
-import { GoogleLogin } from "@react-oauth/google";
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 interface LoginScreenProps {
-  onLogin: (token: string) => void;
+  onLogin: (token: string, obj : CredentialResponse) => void;
 }
 
 export default function LoginScreen({ onLogin }: LoginScreenProps) {
@@ -24,7 +24,7 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
           <GoogleLogin
             onSuccess={(credentialResponse) => {
               if (credentialResponse.credential) {
-                onLogin(credentialResponse.credential);
+                onLogin(credentialResponse.credential, credentialResponse);
               }
             }}
             onError={() => {

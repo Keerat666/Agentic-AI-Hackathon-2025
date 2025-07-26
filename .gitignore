@@ -23,3 +23,5 @@ yarn-error.log
 *.iml
 *.swp
 *.swo
+
+.env

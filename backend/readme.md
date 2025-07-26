@@ -23,6 +23,13 @@ Install the required Python packages using pip and the provided `requirements.tx
 pip install -r backend/cloud-functions/requirements.txt
 ```
 
+### 3. Set quota project in local
+
+Set quota project for gcloud billing.
+```bash
+gcloud auth application-default set-quota-project graceful-byway-467117-r0
+```
+
 ### 3. Locally - Running the Functions
 
 To run a specific function, use the `functions-framework` command. For example, to run the `get-user-data-function`:

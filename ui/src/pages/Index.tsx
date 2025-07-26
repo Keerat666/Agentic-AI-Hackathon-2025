@@ -44,9 +44,9 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Header onLogout={handleLogout} user={user} />
 
-      {activeTab === 'upload' && <UploadTab />}
-      {activeTab === 'dashboard' && <DashboardTab />}
-      {activeTab === 'chat' && <ChatTab />}
+      {activeTab === 'upload' && <UploadTab user={user}/>}
+      {activeTab === 'dashboard' && <DashboardTab user={user} />}
+      {activeTab === 'chat' && <ChatTab user={user}/>}
 
       <FloatingActionButton />
       <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />

@@ -21,7 +21,17 @@ const categoryData = [
   { name: "Entertainment", amount: "$89.67", percentage: "9%", color: "bg-chart-sky", trend: "down" },
 ];
 
-export default function DashboardTab() {
+interface User {
+  name: string;
+  email: string;
+  picture: string;
+}
+
+interface UserProps {
+  user : User
+}
+
+export default function DashboardTab({user }: UserProps) {
   return (
     <div className="pt-20 pb-24 px-6 space-y-6">
       <div className="max-w-md mx-auto space-y-6">

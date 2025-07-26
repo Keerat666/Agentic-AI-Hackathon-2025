@@ -98,12 +98,12 @@ export default function ChatTab({user }: UserProps) {
                     <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
                       <Sparkles className="h-4 w-4 text-primary-foreground" />
                     </div>
-                    <span className="text-sm font-medium text-primary">Gemini AI</span>
+                    <span className="text-sm font-medium">Gemini AI</span>
                   </div>
                 )}
                 <Card className={`p-4 rounded-2xl border-0 shadow-sm ${
                   message.isUser 
-                    ? 'bg-primary text-primary-foreground ml-4' 
+                    ? 'bg-primary ml-4' 
                     : 'bg-card mr-4'
                 }`}>
                   <p className="text-sm leading-relaxed">{message.text}</p>

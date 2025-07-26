@@ -80,17 +80,6 @@ export default function UploadTab() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
-
-useEffect(() => {
-  const fetchData = async () => {
-  const citiesRef = collection(db, "cities");
-  await setDoc(doc(citiesRef, "SF"), {
-    name: "San Francisco", state: "CA", country: "USA",
-    capital: false, population: 860000,
-    regions: ["west_coast", "norcal"] });
-  };
-  fetchData();
-}, []);
   // --- CAMERA CONTROLS ---
 
   const startCamera = async () => {

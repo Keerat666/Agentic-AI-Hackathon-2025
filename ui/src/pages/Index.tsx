@@ -7,23 +7,32 @@ import DashboardTab from "@/components/DashboardTab";
 import ChatTab from "@/components/ChatTab";
 import FloatingActionButton from "@/components/FloatingActionButton";
 import { jwtDecode } from "jwt-decode";
-import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
+import { CredentialResponse } from "@react-oauth/google";
+
+interface User {
+  name: string;
+  email: string;
+  picture: string;
+}
 
 const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<'upload' | 'dashboard' | 'chat'>('upload');
 
-  const handleLogin = (obj, credential:CredentialResponse) => {
-    console.log(obj)
-    const decoded: any = jwtDecode(credential.credential);
+  const handleLogin = (_: string, credential: CredentialResponse) => {
+    const decoded: any = jwtDecode(credential.credential!);
+    const name = decoded.name;
     const email = decoded.email;
-    console.log("email",email)
+    const picture = decoded.picture;
 
+    setUser({ name, email, picture });
     setIsAuthenticated(true);
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    setUser(null);
     setActiveTab('upload');
   };
 
@@ -33,12 +42,12 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header onLogout={handleLogout} />
-      
+      <Header onLogout={handleLogout} user={user} />
+
       {activeTab === 'upload' && <UploadTab />}
       {activeTab === 'dashboard' && <DashboardTab />}
       {activeTab === 'chat' && <ChatTab />}
-      
+
       <FloatingActionButton />
       <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
     </div>

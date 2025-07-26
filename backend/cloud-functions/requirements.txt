@@ -2,3 +2,4 @@
 
 functions-framework
 gcloud
+google-cloud-firestore

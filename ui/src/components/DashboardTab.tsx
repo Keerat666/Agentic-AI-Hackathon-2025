@@ -14,11 +14,11 @@ const weeklyData = [
 ];
 
 const categoryData = [
-  { name: "Groceries", amount: "$346.78", percentage: "35%", color: "bg-chart-mint", trend: "up" },
-  { name: "Dining", amount: "$198.45", percentage: "20%", color: "bg-chart-pink", trend: "down" },
-  { name: "Transportation", amount: "$156.90", percentage: "16%", color: "bg-chart-lavender", trend: "up" },
-  { name: "Shopping", amount: "$134.23", percentage: "14%", color: "bg-chart-peach", trend: "up" },
-  { name: "Entertainment", amount: "$89.67", percentage: "9%", color: "bg-chart-sky", trend: "down" },
+  { name: "Groceries", amount: "₹346.78", percentage: "35%", color: "bg-chart-mint", trend: "up" },
+  { name: "Dining", amount: "₹198.45", percentage: "20%", color: "bg-chart-pink", trend: "down" },
+  { name: "Transportation", amount: "₹156.90", percentage: "16%", color: "bg-chart-lavender", trend: "up" },
+  { name: "Shopping", amount: "₹134.23", percentage: "14%", color: "bg-chart-peach", trend: "up" },
+  { name: "Entertainment", amount: "₹89.67", percentage: "9%", color: "bg-chart-sky", trend: "down" },
 ];
 
 interface User {
@@ -36,40 +36,36 @@ export default function DashboardTab({user }: UserProps) {
     <div className="pt-20 pb-24 px-6 space-y-6">
       <div className="max-w-md mx-auto space-y-6">
         {/* Filter pills */}
-        <div className="flex gap-3 overflow-x-auto pb-2">
+        {/* <div className="flex gap-3 overflow-x-auto pb-2">
           <Button className="bg-primary text-primary-foreground rounded-2xl px-6 py-2 whitespace-nowrap shadow-sm">
             Expenses
           </Button>
           <Button variant="outline" className="border-border rounded-2xl px-6 py-2 whitespace-nowrap">
             Income
           </Button>
-          <Button variant="outline" className="border-border rounded-2xl px-6 py-2 whitespace-nowrap flex items-center gap-2">
-            This Month
-            <ChevronDown className="h-4 w-4" />
-          </Button>
-        </div>
+        </div> */}
 
         {/* Summary cards */}
         <div className="grid grid-cols-2 gap-4">
           <Card className="p-4 border-0 shadow-sm bg-mint-light rounded-2xl">
             <div className="text-center">
               <p className="text-sm font-medium text-muted-foreground">This Week</p>
-              <p className="text-2xl font-bold text-primary-foreground">$526.03</p>
-              <div className="flex items-center justify-center mt-1">
+              <p className="text-2xl font-bold text-primary-foreground">₹526.03</p>
+              {/* <div className="flex items-center justify-center mt-1">
                 <TrendingUp className="h-4 w-4 text-green-600 mr-1" />
                 <span className="text-sm text-green-600">+12%</span>
-              </div>
+              </div> */}
             </div>
           </Card>
           
           <Card className="p-4 border-0 shadow-sm bg-pink-light rounded-2xl">
             <div className="text-center">
               <p className="text-sm font-medium text-muted-foreground">This Month</p>
-              <p className="text-2xl font-bold text-secondary-foreground">$2,184.67</p>
-              <div className="flex items-center justify-center mt-1">
+              <p className="text-2xl font-bold text-secondary-foreground">₹2,184.67</p>
+              {/* <div className="flex items-center justify-center mt-1">
                 <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
                 <span className="text-sm text-red-500">-3%</span>
-              </div>
+              </div> */}
             </div>
           </Card>
         </div>
@@ -112,7 +108,7 @@ export default function DashboardTab({user }: UserProps) {
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-lg">{category.amount}</p>
-                  <div className="flex items-center">
+                  {/* <div className="flex items-center">
                     {category.trend === 'up' ? (
                       <TrendingUp className="h-4 w-4 text-green-600 mr-1" />
                     ) : (
@@ -121,7 +117,7 @@ export default function DashboardTab({user }: UserProps) {
                     <span className={`text-sm ${category.trend === 'up' ? 'text-green-600' : 'text-red-500'}`}>
                       {category.trend === 'up' ? '+' : '-'}5%
                     </span>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </Card>

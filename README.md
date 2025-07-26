@@ -3,29 +3,32 @@ The submission repo for Google Agentic AI Hackathon 2025
 ## Instructions
 Detailed instructions will be updated later
 ### Backend
+
 To set up the backend, ensure you have Python installed. Follow these steps:
-1. Clone the repository.
-2. Navigate to the backend directory.
-3. Install the required dependencies using:
+
+1.  **Navigate to the `python-api` directory:**
+    ```bash
+    cd backend/python-api
+    ```
+
+2.  **Create a virtual environment:**
+    ```bash
+    python3 -m venv venv
+    ```
+
+3.  **Activate the virtual environment:**
+    ```bash
+    source venv/bin/activate
+    ```
+
+4.  **Install the required dependencies:**
     ```bash
     pip install -r requirements.txt
     ```
-4. Run the server with:
+
+5.  **Run the application:**
     ```bash
-    python app.py
+    uvicorn main:app --reload
     ```
 
-### Frontend
-The frontend is built using React Native. Follow these steps:
-1. Navigate to the `UI` folder.
-2. Choose the desired project folder (GPAY clone or Google Wallet clone).
-3. Install the required dependencies using:
-    ```bash
-    npm install
-    ```
-4. Start the application with:
-    ```bash
-    npm start
-    ```
-
-Further details will be updated later.
+    The application will be available at `http://127.0.0.1:8000`.

@@ -11,7 +11,8 @@ ENV/
 dist/
 build/
 *.log
-
+backend/gcp_cloudfunc/graceful-byway-467117-r0-ed86d9a9acf4.json
+backend/gcp_cloudfunc/graceful-byway-467117-r0-e713f790f182.json
 # React Native
 node_modules/
 npm-debug.log

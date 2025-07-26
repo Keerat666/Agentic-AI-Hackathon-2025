@@ -36,10 +36,10 @@ export default function Header({ onLogout,user }: HeaderProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48 bg-card border border-border/50 rounded-2xl shadow-lg">
-            <DropdownMenuItem className="rounded-xl">
+            {/* <DropdownMenuItem className="rounded-xl">
               <User className="mr-2 h-4 w-4" />
               Profile
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             <DropdownMenuItem onClick={onLogout} className="rounded-xl">
               <LogOut className="mr-2 h-4 w-4" />
               Logout

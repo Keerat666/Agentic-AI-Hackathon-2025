@@ -11,7 +11,8 @@ const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeTab, setActiveTab] = useState<'upload' | 'dashboard' | 'chat'>('upload');
 
-  const handleLogin = () => {
+  const handleLogin = (obj) => {
+    console.log(obj)
     setIsAuthenticated(true);
   };
 

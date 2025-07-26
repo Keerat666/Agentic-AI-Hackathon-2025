@@ -6,7 +6,7 @@ import UploadTab from "@/components/UploadTab";
 import DashboardTab from "@/components/DashboardTab";
 import ChatTab from "@/components/ChatTab";
 import FloatingActionButton from "@/components/FloatingActionButton";
-import jwt_decode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 
 const Index = () => {
@@ -15,7 +15,7 @@ const Index = () => {
 
   const handleLogin = (obj, credential:CredentialResponse) => {
     console.log(obj)
-    const decoded: any = jwt_decode(credential.credential);
+    const decoded: any = jwtDecode(credential.credential);
     const email = decoded.email;
     console.log("email",email)
 

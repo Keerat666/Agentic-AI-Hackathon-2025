@@ -19,16 +19,37 @@ const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<'upload' | 'dashboard' | 'chat'>('upload');
+  const [isOffline, setIsOffline] = useState(false);
 
   const handleLogin = (_: string, credential: CredentialResponse) => {
-    const decoded: any = jwtDecode(credential.credential!);
-    const name = decoded.name;
-    const email = decoded.email;
-    const picture = decoded.picture;
+    
+    if(isOffline)
+    {
+      const name = "Keerat";
+      const email = "k@gmail.com";
+      const picture = "https://placehold.co/200";
+      setUser({ name, email, picture });
+      setIsAuthenticated(true);
+    }
+    else
+    {
+      const decoded: any = jwtDecode(credential.credential!);
+      const name = decoded.name;
+      const email = decoded.email;
+      const picture = decoded.picture;
+  
+      setUser({ name, email, picture });
+      setIsAuthenticated(true);
+    }
+  };
 
+  const handleLoginOffline =()=>{
+    const name = "Keerat";
+    const email = "k@gmail.com";
+    const picture = "https://placehold.co/200";
     setUser({ name, email, picture });
     setIsAuthenticated(true);
-  };
+  }
 
   const handleLogout = () => {
     setIsAuthenticated(false);
@@ -37,7 +58,7 @@ const Index = () => {
   };
 
   if (!isAuthenticated) {
-    return <LoginScreen onLogin={handleLogin} />;
+    return <LoginScreen onLogin={handleLogin} isOffline={isOffline} handleLoginOffline={handleLoginOffline} />;
   }
 
   return (

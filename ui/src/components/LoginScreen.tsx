@@ -4,9 +4,11 @@ import { Card } from "@/components/ui/card";
 
 interface LoginScreenProps {
   onLogin: (token: string, obj : CredentialResponse) => void;
+  isOffline : Boolean,
+  handleLoginOffline : ()=> void
 }
 
-export default function LoginScreen({ onLogin }: LoginScreenProps) {
+export default function LoginScreen({ onLogin , isOffline, handleLoginOffline }: LoginScreenProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-mint-light via-pink-light to-lavender-light flex items-center justify-center p-6">
       <Card className="w-full max-w-md p-8 text-center space-y-8 shadow-lg border-0 bg-card/80 backdrop-blur-sm">
@@ -23,7 +25,7 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
         <div className="space-y-4">
           <GoogleLogin
             onSuccess={(credentialResponse) => {
-              if (credentialResponse.credential) {
+              if (credentialResponse.credential && !isOffline) {
                 onLogin(credentialResponse.credential, credentialResponse);
               }
             }}
@@ -31,6 +33,8 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
               console.error("Login Failed");
             }}
           />
+
+          <p onClick={handleLoginOffline}>Login Guest</p>
 
           <p className="text-xs text-muted-foreground">
             Secure authentication powered by Google

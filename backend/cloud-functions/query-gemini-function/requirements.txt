@@ -1,0 +1,8 @@
+# For Firebase/Firestore
+google-cloud-firestore
+
+# For Gemini API (Vertex AI)
+google-cloud-aiplatform
+
+# General GCP Functions Framework
+functions-framework

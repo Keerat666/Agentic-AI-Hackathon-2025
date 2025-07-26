@@ -18,7 +18,17 @@ interface Message {
   timestamp: string;
 }
 
-export default function ChatTab() {
+interface User {
+  name: string;
+  email: string;
+  picture: string;
+}
+
+interface UserProps {
+  user : User
+}
+
+export default function ChatTab({user }: UserProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,

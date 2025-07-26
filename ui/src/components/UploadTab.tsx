@@ -35,7 +35,18 @@ const recentTransactions = [
   }
 ];
 
-export default function UploadTab() {
+
+interface User {
+  name: string;
+  email: string;
+  picture: string;
+}
+
+interface UserProps {
+  user : User
+}
+
+export default function UploadTab({user }: UserProps) {
   return (
     <div className="pt-20 pb-24 px-6 space-y-6">
       <div className="max-w-md mx-auto space-y-6">

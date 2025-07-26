@@ -28,7 +28,7 @@ pip install -r backend/cloud-functions/requirements.txt
 To run a specific function, use the `functions-framework` command. For example, to run the `get-user-data-function`:
 
 ```bash
-functions-framework --target=get_user_data --source=backend/cloud-functions/get-user-data-function/main.py
+functions-framework --target=get_user_data --source=backend/cloud-functions/get-user-data-function/main.py --port=8080
 ```
 
 

@@ -7,11 +7,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface HeaderProps {
-  onLogout: () => void;
+interface User {
+  name: string;
+  email: string;
+  picture: string;
 }
 
-export default function Header({ onLogout }: HeaderProps) {
+interface HeaderProps {
+  onLogout: () => void;
+  user : User
+}
+
+export default function Header({ onLogout,user }: HeaderProps) {
   return (
     <header className="fixed top-0 left-0 right-0 bg-card/80 backdrop-blur-sm border-b border-border/50 px-6 py-4 z-40">
       <div className="flex items-center justify-between max-w-md mx-auto">
@@ -19,7 +26,7 @@ export default function Header({ onLogout }: HeaderProps) {
           <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
             <span className="text-lg">💰</span>
           </div>
-          <h1 className="text-xl font-bold">FinanceAI</h1>
+          <h1 className="text-xl font-bold">Hello {user.name}</h1>
         </div>
 
         <DropdownMenu>

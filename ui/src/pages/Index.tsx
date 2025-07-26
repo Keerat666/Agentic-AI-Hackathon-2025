@@ -6,13 +6,19 @@ import UploadTab from "@/components/UploadTab";
 import DashboardTab from "@/components/DashboardTab";
 import ChatTab from "@/components/ChatTab";
 import FloatingActionButton from "@/components/FloatingActionButton";
+import jwt_decode from "jwt-decode";
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 
 const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeTab, setActiveTab] = useState<'upload' | 'dashboard' | 'chat'>('upload');
 
-  const handleLogin = (obj) => {
+  const handleLogin = (obj, credential:CredentialResponse) => {
     console.log(obj)
+    const decoded: any = jwt_decode(credential.credential);
+    const email = decoded.email;
+    console.log("email",email)
+
     setIsAuthenticated(true);
   };
 

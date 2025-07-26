@@ -45,14 +45,14 @@ To deploy a specific function, use the `gcloud` command. For example, to deploy 
 
 ```bash
 gcloud functions deploy get-user-data \
---project=[YOUR_PROJECT_ID] \
+--project=graceful-byway-467117-r0 \
 --region=us-central1 \
 --runtime=python311 \
---source=./get-user-data-function/ \
+--source=./backend/cloud-functions/get-user-data-function/ \
 --entry-point=get_user_data \
 --trigger-http \
 --allow-unauthenticated \
---service-account=[YOUR_SERVICE_ACCOUNT_EMAIL]
+--service-account=firestore-raseed@graceful-byway-467117-r0.iam.gserviceaccount.com
 ```
 
 

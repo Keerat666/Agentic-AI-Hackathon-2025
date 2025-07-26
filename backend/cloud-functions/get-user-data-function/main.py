@@ -123,4 +123,3 @@ def get_user_data(request):
     except Exception as e:
         print(f"An error occurred: {e}")
         return ({"error": "An internal error occurred while fetching data."}, 500, headers)
-

@@ -1,4 +1,4 @@
-import { Upload, PieChart, MessageSquare } from "lucide-react";
+import { Home, PieChart, MessageSquare } from "lucide-react";
 
 interface TabNavigationProps {
   activeTab: 'upload' | 'dashboard' | 'chat';
@@ -7,7 +7,7 @@ interface TabNavigationProps {
 
 export default function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
   const tabs = [
-    { id: 'upload', label: 'Home', icon: Upload },
+    { id: 'upload', label: 'Home', icon: Home },
     { id: 'dashboard', label: 'Dashboard', icon: PieChart },
     { id: 'chat', label: 'Chat', icon: MessageSquare },
   ] as const;

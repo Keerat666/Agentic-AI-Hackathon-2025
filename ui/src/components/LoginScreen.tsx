@@ -34,7 +34,7 @@ export default function LoginScreen({ onLogin , isOffline, handleLoginOffline }:
             }}
           />
 
-          <p onClick={handleLoginOffline}>Login Guest</p>
+          {/* <p onClick={handleLoginOffline}>Login Guest</p> */}
 
           <p className="text-xs text-muted-foreground">
             Secure authentication powered by Google

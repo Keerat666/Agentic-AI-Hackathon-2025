@@ -5,6 +5,10 @@ from google.cloud import storage
 import os
 from google.cloud import firestore
 from datetime import datetime,timezone
+import vertexai
+from vertexai.generative_models import GenerativeModel
+from io import BytesIO
+from PIL import Image
 
 # Set your Cloud Storage bucket name
 BUCKET_NAME = "wallet-images1"
@@ -18,6 +22,21 @@ try:
 except Exception as e:
     print(f"Error initializing Firestore client: {e}")
     db = None
+# Initialize Vertex AI in the global scope
+try:
+    # Get project and location from environment variables
+    PROJECT_ID = os.environ.get("GCP_PROJECT")
+    LOCATION = os.environ.get("GCP_REGION")
+
+    if not all([PROJECT_ID, LOCATION]):
+        raise ValueError("GCP_PROJECT and GCP_REGION environment variables are not set.")
+
+    vertexai.init(project=PROJECT_ID, location=LOCATION)
+    # Model name for Gemini 1.0 Pro
+    model = GenerativeModel("gemini-2.5-pro")
+except Exception as e:
+    print(f"Error initializing Vertex AI: {e}")
+    model = None
 
 @functions_framework.http
 def upload_form_data(request: Request):
@@ -31,6 +50,9 @@ def upload_form_data(request: Request):
 
     if not db:
         return {"error": "Firestore client is not available."}, 500
+    
+    if not model:
+        return {"error": "Vertex AI model is not available."}, 500
 
     # Handle CORS preflight
     if request.method == "OPTIONS":
@@ -77,6 +99,30 @@ def upload_form_data(request: Request):
         gcs_uri= f"gs://{BUCKET_NAME}/{filename}",
 
         print(f"File uploaded to GCS: gs://{BUCKET_NAME}/{filename}")
+        try:
+            # Construct the prompt for Gemini
+            prompt = f"""
+            {context}
+
+            Here is the user's data for context:
+            ---
+            {user_data}
+            ---
+
+            Based on the data above, please answer the following user query:
+            "{user_query}"
+            """
+
+            image_bytes = blob.download_as_bytes()
+            img = Image.open(BytesIO(image_bytes))
+
+
+            # Generate content
+            response = model.generate_content([prompt,"Extract text from this image:", img])
+
+        except Exception as e:
+            print(f"An error occurred while calling Gemini API: {e}")
+            return ({"error": "An internal error occurred while processing the request."}, 500, headers)
         collection_name='sample_transactions'
         doc_ref = db.collection(collection_name).document()
 
@@ -94,6 +140,7 @@ def upload_form_data(request: Request):
             "user": user,
             "transaction_time": transaction_time,
             "document_id": doc_ref.id,
+            "ocr":response.text
         }, 200, headers)
 
     except Exception as e:

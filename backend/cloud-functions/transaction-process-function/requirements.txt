@@ -10,3 +10,7 @@ google-cloud-aiplatform
 functions-framework
 
 google-cloud-storage
+
+pillow
+
+google-cloud-aiplatform

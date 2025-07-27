@@ -60,10 +60,32 @@ interface User {
 }
 
 interface UserProps {
-  user : User
+  user: User;
 }
 
-export default function UploadTab({user }: UserProps) {
+// Function to fetch user data
+const fetchUserData = async () => {
+  try {
+    const response = await fetch("https://us-central1-graceful-byway-467117-r0.cloudfunctions.net/get-user-data", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        collection: "sample_transactions",
+        query_type: "last_7_days"
+      })
+    });
+
+    if (!response.ok) throw new Error("Failed to fetch user data");
+
+    const data = await response.json();
+    console.log("Fetched user data:", data);
+    return data;
+  } catch (err) {
+    console.error("Error fetching user data:", err);
+  }
+};
+
+export default function UploadTab({ user }: UserProps) {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [stream, setStream] = useState(null);
@@ -74,7 +96,6 @@ export default function UploadTab({user }: UserProps) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
-  console.log(Date.now())
   const startCamera = async () => {
     setError('');
     setUploadSuccess(false);
@@ -135,15 +156,25 @@ export default function UploadTab({user }: UserProps) {
     setIsUploading(true);
 
     try {
-      const payload = {
-        image: dataUrl,
-        timestamp: new Date().toISOString(),
-        userId: "userId",
-      };
+      const blob = await (await fetch(dataUrl)).blob();
 
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate delay
+      const formData = new FormData();
+      formData.append("file", blob, "sample.jpg");
+      formData.append("transaction_time", Date.now().toString());
+      formData.append("user", user?.name || "NA");
+
+      const response = await fetch("https://us-central1-graceful-byway-467117-r0.cloudfunctions.net/transaction-process", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server responded with ${response.status}`);
+      }
+
       setUploadSuccess(true);
       setError('');
+      await fetchUserData(); // Call after upload
     } catch (err) {
       console.error("Upload error:", err);
       setError(`Failed to upload image: ${err.message || 'Unknown error'}`);
@@ -168,15 +199,15 @@ export default function UploadTab({user }: UserProps) {
   };
 
   useEffect(() => {
+    fetchUserData(); // Call on component load
     return () => {
       stopCamera();
     };
-  }, [stream]);
+  }, []);
 
-
-  const handleImportGallery =()=>{
-    alert("This feature is in development!")
-  }
+  const handleImportGallery = () => {
+    alert("This feature is in development!");
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen font-sans">
@@ -191,10 +222,11 @@ export default function UploadTab({user }: UserProps) {
               <span className="text-sm font-medium">Take Photo</span>
             </FinalButton>
 
-            <FinalButton               
-            onClick={handleImportGallery}
-            variant="outline" 
-            className="h-16 border-2 border-blue-200 hover:bg-blue-50 rounded-2xl flex-col gap-2">
+            <FinalButton
+              onClick={handleImportGallery}
+              variant="outline"
+              className="h-16 border-2 border-blue-200 hover:bg-blue-50 rounded-2xl flex-col gap-2"
+            >
               <Upload className="h-6 w-6 text-blue-700" />
               <span className="text-sm font-medium text-blue-700">Import Gallery</span>
             </FinalButton>
@@ -216,16 +248,16 @@ export default function UploadTab({user }: UserProps) {
             </div>
           )}
 
-          {uploadSuccess && (
-            <div className="p-3 bg-green-100 text-green-700 rounded-lg text-center text-sm flex items-center justify-center gap-2">
-              <CheckCircle className="h-5 w-5" /> Image uploaded successfully!
-            </div>
-          )}
-
           {capturedImage && !isUploading && (
             <div className="mt-4 p-4 border border-gray-200 rounded-lg bg-white shadow-sm">
               <h3 className="text-lg font-semibold mb-2">Captured Image Preview:</h3>
               <img src={capturedImage} alt="Captured" className="w-full h-auto rounded-lg object-contain border border-gray-300" />
+            </div>
+          )}
+
+          {uploadSuccess && (
+            <div className="p-3 bg-green-100 text-green-700 rounded-lg text-center text-sm flex items-center justify-center gap-2">
+              <CheckCircle className="h-5 w-5" /> Image uploaded successfully!
             </div>
           )}
 
@@ -259,8 +291,8 @@ export default function UploadTab({user }: UserProps) {
       </div>
 
       {isCameraOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
-          <div className="relative w-full bg-gray-900 rounded-lg shadow-xl overflow-hidden">
+        <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
+          <div className="relative w-full max-w-md aspect-[3/4] bg-gray-900 rounded-xl shadow-xl overflow-hidden flex flex-col items-center justify-center">
             <button
               onClick={handleCloseCamera}
               className="absolute top-4 right-4 text-white hover:text-gray-300 z-10 p-2 rounded-full bg-gray-800 bg-opacity-50"
@@ -268,15 +300,17 @@ export default function UploadTab({user }: UserProps) {
             >
               <X className="h-6 w-6" />
             </button>
+
             <video
               ref={videoRef}
               autoPlay
               playsInline
               muted
-              className="w-full h-full object-contain rounded-lg"
-              />
-            {!isUploading && stream && (
-              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+              className="w-full h-full object-cover rounded-xl"
+            />
+
+            {!isUploading && (
+              <div className="absolute bottom-6 w-full flex justify-center z-10">
                 <FinalButton
                   onClick={capturePhoto}
                   className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full shadow-lg"

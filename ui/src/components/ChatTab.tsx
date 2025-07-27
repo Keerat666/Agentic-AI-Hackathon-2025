@@ -145,6 +145,15 @@ export default function ChatTab({ user }: UserProps) {
 
         {/* Query Range Picker */}
         <div className="flex gap-3 mb-4 overflow-x-auto pb-2">
+
+        <Button
+            variant={queryType === "last_10_transactions" ? "default" : "outline"}
+            onClick={() => setQueryType("last_10_transactions")}
+            className="border-border rounded-2xl px-4 py-2 whitespace-nowrap"
+          >
+            Last 10 transactions
+          </Button>
+          
           <Button
             variant={queryType === "last_7_days" ? "default" : "outline"}
             onClick={() => setQueryType("last_7_days")}
@@ -166,13 +175,6 @@ export default function ChatTab({ user }: UserProps) {
             className="border-border rounded-2xl px-4 py-2 whitespace-nowrap"
           >
             Custom range
-          </Button>
-          <Button
-            variant={queryType === "last_10_transactions" ? "default" : "outline"}
-            onClick={() => setQueryType("last_10_transactions")}
-            className="border-border rounded-2xl px-4 py-2 whitespace-nowrap"
-          >
-            Last 10 transactions
           </Button>
         </div>
 

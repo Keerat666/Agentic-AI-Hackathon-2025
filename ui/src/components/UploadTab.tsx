@@ -74,6 +74,7 @@ export default function UploadTab({user }: UserProps) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
+  console.log(Date.now())
   const startCamera = async () => {
     setError('');
     setUploadSuccess(false);
@@ -172,6 +173,11 @@ export default function UploadTab({user }: UserProps) {
     };
   }, [stream]);
 
+
+  const handleImportGallery =()=>{
+    alert("This feature is in development!")
+  }
+
   return (
     <div className="bg-gray-50 min-h-screen font-sans">
       <div className="pt-20 pb-24 px-6 space-y-6">
@@ -185,7 +191,10 @@ export default function UploadTab({user }: UserProps) {
               <span className="text-sm font-medium">Take Photo</span>
             </FinalButton>
 
-            <FinalButton variant="outline" className="h-16 border-2 border-blue-200 hover:bg-blue-50 rounded-2xl flex-col gap-2">
+            <FinalButton               
+            onClick={handleImportGallery}
+            variant="outline" 
+            className="h-16 border-2 border-blue-200 hover:bg-blue-50 rounded-2xl flex-col gap-2">
               <Upload className="h-6 w-6 text-blue-700" />
               <span className="text-sm font-medium text-blue-700">Import Gallery</span>
             </FinalButton>
@@ -251,7 +260,7 @@ export default function UploadTab({user }: UserProps) {
 
       {isCameraOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
-          <div className="relative w-full max-w-lg mx-auto bg-gray-900 rounded-lg shadow-xl overflow-hidden">
+          <div className="relative w-full bg-gray-900 rounded-lg shadow-xl overflow-hidden">
             <button
               onClick={handleCloseCamera}
               className="absolute top-4 right-4 text-white hover:text-gray-300 z-10 p-2 rounded-full bg-gray-800 bg-opacity-50"
@@ -264,7 +273,7 @@ export default function UploadTab({user }: UserProps) {
               autoPlay
               playsInline
               muted
-              className="w-full max-h-[80vh] aspect-video object-contain rounded-lg"
+              className="w-full h-full object-contain rounded-lg"
               />
             {!isUploading && stream && (
               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">

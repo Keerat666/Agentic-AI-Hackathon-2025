@@ -189,8 +189,8 @@ export default function UploadTab({ user }: UserProps) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            title: 'My Pass'+(Date.now()),
-            subtitle: 'Some details',
+            title: 'Raseed - '+(Date.now()),
+            subtitle: 'Expense',
           }),
         }
       );

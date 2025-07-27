@@ -23,23 +23,23 @@ export default function LoginScreen({ onLogin , isOffline, handleLoginOffline }:
         </div>
 
         <div className="space-y-4">
-          <GoogleLogin
-            onSuccess={(credentialResponse) => {
-              if (credentialResponse.credential && !isOffline) {
-                onLogin(credentialResponse.credential, credentialResponse);
-              }
-            }}
-            onError={() => {
-              console.error("Login Failed");
-            }}
-          />
+  <div className="flex justify-center">
+    <GoogleLogin
+      onSuccess={(credentialResponse) => {
+        if (credentialResponse.credential && !isOffline) {
+          onLogin(credentialResponse.credential, credentialResponse);
+        }
+      }}
+      onError={() => {
+        console.error("Login Failed");
+      }}
+    />
+  </div>
 
-          <p onClick={handleLoginOffline}>Login Guest</p>
-
-          <p className="text-xs text-muted-foreground">
-            Secure authentication powered by Google
-          </p>
-        </div>
+  <p className="text-xs text-muted-foreground">
+    Secure authentication powered by Google
+  </p>
+</div>
       </Card>
     </div>
   );

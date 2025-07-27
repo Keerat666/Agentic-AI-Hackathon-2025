@@ -38,7 +38,7 @@ try:
 
     vertexai.init(project=PROJECT_ID, location=LOCATION)
     # Corrected model name to a valid Gemini Pro model
-    model = GenerativeModel("gemini-1.0-pro")
+    model = GenerativeModel("gemini-2.5-flash-lite")
 except Exception as e:
     print(f"Error initializing Vertex AI: {e}")
     model = None

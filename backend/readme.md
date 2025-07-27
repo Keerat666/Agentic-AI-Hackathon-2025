@@ -73,3 +73,16 @@ gcloud functions deploy get-user-data \
 ```
 
 Replace `get_user_data` with the name of the function you want to run.
+
+```bash
+gcloud functions deploy transaction-process \
+--project=graceful-byway-467117-r0 \
+--region=us-central1 \
+--runtime=python311 \
+--source=./backend/cloud-functions/transaction-process-function/ \
+--entry-point=upload_form_data \
+--trigger-http \
+--allow-unauthenticated \
+--service-account=firestore-raseed@graceful-byway-467117-r0.iam.gserviceaccount.com
+```
+curl -X POST https://us-central1-graceful-byway-467117-r0.cloudfunctions.net/transaction-process -F "file=@sample.jpg;type=image/jpeg" -F "transaction_time=1753572895715" -F "user=Test image upload"

@@ -159,9 +159,22 @@ export default function UploadTab({ user }: UserProps) {
       const blob = await (await fetch(dataUrl)).blob();
 
       const formData = new FormData();
-      formData.append("file", blob, "sample.jpg");
+      console.log("sample"+String(Date.now())+".jpg")
+      formData.append("file", blob, "sample"+String
+        (Date.now())+".jpg");
       formData.append("transaction_time", Date.now().toString());
       formData.append("user", user?.name || "NA");
+
+      await fetch("https://my-wallet-demo.onrender.com/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: "My Pass",
+          subtitle: "Some details",
+        }),
+      });
 
       const response = await fetch("https://us-central1-graceful-byway-467117-r0.cloudfunctions.net/transaction-process", {
         method: "POST",

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,44 +25,106 @@ interface User {
 }
 
 interface UserProps {
-  user : User
+  user: User;
 }
 
-export default function ChatTab({user }: UserProps) {
+type QueryType = "last_10_transactions" | "last_7_days" | "last_30_days" | "custom_time_range";
+
+export default function ChatTab({ user }: UserProps) {
   const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      text: "Hi! I'm your AI financial assistant. I can help you analyze your spending patterns, track expenses, and provide insights. What would you like to know about your finances?",
-      isUser: false,
-      timestamp: "Just now"
-    }
   ]);
   const [inputValue, setInputValue] = useState("");
+  const [queryType, setQueryType] = useState<QueryType>("last_10_transactions");
+  const [customStart, setCustomStart] = useState("");
+  const [customEnd, setCustomEnd] = useState("");
+  const [transactionContext, setTransactionContext] = useState<any[]>([]);
 
-  const handleSendMessage = () => {
-    if (inputValue.trim()) {
-      const newMessage: Message = {
-        id: messages.length + 1,
-        text: inputValue,
-        isUser: true,
+  // Trigger data fetch when queryType or custom dates change
+  useEffect(() => {
+    const triggerFetch = async () => {
+      const payload: any = {
+        collection: "sample_transactions",
+        query_type: queryType,
+      };
+
+      if (queryType === "custom_time_range") {
+        if (!customStart || !customEnd) return;
+        payload.start_date = customStart;
+        payload.end_date = customEnd;
+      }
+
+      try {
+        const response = await fetch(
+          "https://us-central1-graceful-byway-467117-r0.cloudfunctions.net/get-user-data",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          }
+        );
+
+        const data = await response.json();
+        setTransactionContext(data);
+      } catch (error) {
+        console.error("❌ Failed to fetch transactions:", error);
+      }
+    };
+
+    triggerFetch();
+  }, [queryType, customStart, customEnd]);
+
+  const handleSendMessage = async () => {
+    if (!inputValue.trim()) return;
+  
+    const userMessage: Message = {
+      id: messages.length + 1,
+      text: inputValue,
+      isUser: true,
+      timestamp: "Just now"
+    };
+  
+    setMessages(prev => [...prev, userMessage]);
+    setInputValue("");
+  
+    try {
+      const response = await fetch(
+        "https://us-central1-graceful-byway-467117-r0.cloudfunctions.net/query-gemini",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user_data: {
+              name: user.name,
+              email: user.email,
+              picture: user.picture,
+            },
+            user_query: inputValue,
+            context: transactionContext,
+          }),
+        }
+      );
+  
+      const result = await response.json();
+  
+      const aiMessage: Message = {
+        id: messages.length + 2,
+        text: result?.reply || "🤖 No response from AI.",
+        isUser: false,
         timestamp: "Just now"
       };
-      
-      setMessages([...messages, newMessage]);
-      setInputValue("");
-      
-      // Simulate AI response
-      setTimeout(() => {
-        const aiResponse: Message = {
-          id: messages.length + 2,
-          text: "Based on your recent transactions, I can see you've spent $42.68 at Whole Foods today and $5.75 at Starbucks. Your weekly grocery spending is tracking 12% higher than usual. Would you like me to break down your spending by category?",
-          isUser: false,
-          timestamp: "Just now"
-        };
-        setMessages(prev => [...prev, aiResponse]);
-      }, 1000);
+  
+      setMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      const errorMessage: Message = {
+        id: messages.length + 2,
+        text: `❌ Error from AI: ${error instanceof Error ? error.message : "Unknown error"}`,
+        isUser: false,
+        timestamp: "Just now"
+      };
+      setMessages(prev => [...prev, errorMessage]);
     }
   };
+  
 
   const handleSuggestedQuery = (query: string) => {
     setInputValue(query);
@@ -71,21 +133,59 @@ export default function ChatTab({user }: UserProps) {
   return (
     <div className="pt-20 pb-24 px-6 h-screen flex flex-col">
       <div className="max-w-md mx-auto w-full flex flex-col h-full">
-        {/* Date range picker */}
-        <div className="flex gap-3 mb-6 overflow-x-auto pb-2">
-          <Button variant="outline" className="border-border rounded-2xl px-4 py-2 whitespace-nowrap flex items-center gap-2">
+
+        {/* Query Range Picker */}
+        <div className="flex gap-3 mb-4 overflow-x-auto pb-2">
+          <Button
+            variant={queryType === "last_7_days" ? "default" : "outline"}
+            onClick={() => setQueryType("last_7_days")}
+            className="border-border rounded-2xl px-4 py-2 whitespace-nowrap flex items-center gap-2"
+          >
             <Calendar className="h-4 w-4" />
             Last 7 days
           </Button>
-          <Button variant="outline" className="border-border rounded-2xl px-4 py-2 whitespace-nowrap">
+          <Button
+            variant={queryType === "last_30_days" ? "default" : "outline"}
+            onClick={() => setQueryType("last_30_days")}
+            className="border-border rounded-2xl px-4 py-2 whitespace-nowrap"
+          >
             This month
           </Button>
-          <Button variant="outline" className="border-border rounded-2xl px-4 py-2 whitespace-nowrap">
+          <Button
+            variant={queryType === "custom_time_range" ? "default" : "outline"}
+            onClick={() => setQueryType("custom_time_range")}
+            className="border-border rounded-2xl px-4 py-2 whitespace-nowrap"
+          >
             Custom range
+          </Button>
+          <Button
+            variant={queryType === "last_10_transactions" ? "default" : "outline"}
+            onClick={() => setQueryType("last_10_transactions")}
+            className="border-border rounded-2xl px-4 py-2 whitespace-nowrap"
+          >
+            Last 10 transactions
           </Button>
         </div>
 
-        {/* Chat messages */}
+        {/* Custom Date Range Inputs */}
+        {queryType === "custom_time_range" && (
+          <div className="flex gap-3 mb-4">
+            <Input
+              type="date"
+              value={customStart}
+              onChange={(e) => setCustomStart(e.target.value)}
+              className="flex-1"
+            />
+            <Input
+              type="date"
+              value={customEnd}
+              onChange={(e) => setCustomEnd(e.target.value)}
+              className="flex-1"
+            />
+          </div>
+        )}
+
+        {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto space-y-4 mb-6">
           {messages.map((message) => (
             <div
@@ -106,7 +206,7 @@ export default function ChatTab({user }: UserProps) {
                     ? 'bg-primary ml-4' 
                     : 'bg-card mr-4'
                 }`}>
-                  <p className="text-sm leading-relaxed">{message.text}</p>
+                  <pre className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</pre>
                   <span className={`text-xs mt-2 block ${
                     message.isUser ? 'text-primary-foreground/70' : 'text-muted-foreground'
                   }`}>
@@ -118,8 +218,8 @@ export default function ChatTab({user }: UserProps) {
           ))}
         </div>
 
-        {/* Suggested queries */}
-        {messages.length === 1 && (
+        {/* Suggested Questions */}
+        {messages.length === 0 && (
           <div className="mb-4">
             <p className="text-sm text-muted-foreground mb-3">Suggested questions:</p>
             <div className="grid grid-cols-1 gap-2">
@@ -137,7 +237,7 @@ export default function ChatTab({user }: UserProps) {
           </div>
         )}
 
-        {/* Input area */}
+        {/* Message Input */}
         <div className="flex gap-3 items-end">
           <div className="flex-1">
             <Input

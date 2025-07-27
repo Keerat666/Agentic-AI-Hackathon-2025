@@ -74,6 +74,7 @@ export default function UploadTab({user }: UserProps) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
+  console.log(Date.now())
   const startCamera = async () => {
     setError('');
     setUploadSuccess(false);

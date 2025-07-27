@@ -6,13 +6,19 @@ import os
 from google.cloud import firestore
 from datetime import datetime,timezone
 import vertexai
-from vertexai.generative_models import GenerativeModel
+from vertexai.generative_models import GenerativeModel,Image
 from io import BytesIO
-from PIL import Image
 
 # Set your Cloud Storage bucket name
 BUCKET_NAME = "wallet-images1"
-
+'''
+entertainment
+health
+utility
+groceries
+dining
+misc
+'''
 # Global GCS client to reuse across invocations
 storage_client = storage.Client('graceful-byway-467117-r0')
 # Initialize Firestore Client in the global scope
@@ -101,12 +107,21 @@ def upload_form_data(request: Request):
         print(f"File uploaded to GCS: gs://{BUCKET_NAME}/{filename}")
         try:
             # Construct the prompt for Gemini
+            context='''you are a finance tracker fetch the data from upload receipt and respond in json format
+                    {
+                    "details":{
+                        "transaction_type":entertainment | health | utility | groceries | dining | misc
+                        "trasaction_amount":<total_amount>,
+                        "transaction_details:<breakdown of transaction>
+                        "transaction_location:<store address if available else na"
+                    }
+                    }
+                    '''
+            user_query="Extract text from this image and classify the details for the transaction:"
             prompt = f"""
-            {context}
-
-            Here is the user's data for context:
+            Here is the user's data for context for the transaction:
             ---
-            {user_data}
+            {context}
             ---
 
             Based on the data above, please answer the following user query:
@@ -114,11 +129,11 @@ def upload_form_data(request: Request):
             """
 
             image_bytes = blob.download_as_bytes()
-            img = Image.open(BytesIO(image_bytes))
+            img = Image.from_bytes(image_bytes)
 
 
             # Generate content
-            response = model.generate_content([prompt,"Extract text from this image:", img])
+            response = model.generate_content([prompt, img])
 
         except Exception as e:
             print(f"An error occurred while calling Gemini API: {e}")
@@ -129,10 +144,66 @@ def upload_form_data(request: Request):
         doc_data = {
             "user": user,
             "transaction_time": transaction_time,
-            "gcs_uri": gcs_uri
+            "gcs_uri": gcs_uri,
+            "details":response.text
         }
         doc_ref.set(doc_data)
         print(f"Saved to Firestore: {doc_ref.id}")
+
+        template_wallet = {
+            "id": "3388000000022969024.simple_class",
+            "classTemplateInfo": {
+                "cardTemplateOverride": {
+                    "cardRowTemplateInfos": [
+                        {
+                            "twoItems": {
+                                "startItem": {
+                                    "firstValue": {
+                                        "fields": [
+                                            {"fieldPath": "object.textModulesData[\"details\"]"}
+                                        ]
+                                    }
+                                },
+                                "endItem": {
+                                    "firstValue": {
+                                        "fields": [
+                                            {"fieldPath": "object.textModulesData[\"subtitle\"]"}
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                },
+                "detailsTemplateOverride": {
+                    "detailsItemInfos": [
+                        {
+                            "item": {
+                                "firstValue": {
+                                    "fields": [
+                                        {"fieldPath": "object.textModulesData[\"details\"]"}
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "item": {
+                                "firstValue": {
+                                    "fields": [
+                                        {"fieldPath": "object.textModulesData[\"subtitle\"]"}
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "textModulesData": [
+                {"id": "details", "header": "Details", "body": ""},
+                {"id": "subtitle", "header": "Subtitle", "body": ""}
+            ]
+        }
+
 
         return ({
             "message": f"File '{filename}' uploaded successfully.",
@@ -140,9 +211,108 @@ def upload_form_data(request: Request):
             "user": user,
             "transaction_time": transaction_time,
             "document_id": doc_ref.id,
-            "ocr":response.text
+            "details":response.text
         }, 200, headers)
 
     except Exception as e:
         print(f"Error: {e}")
         return ({"error": "Failed to process form data or upload to GCS."}, 500, headers)
+
+
+def testwallet():
+    import json
+    import requests
+    from google.cloud import storage
+    from google.auth.transport.requests import Request
+    from google.oauth2 import service_account
+
+    # === Config ===
+    SERVICE_ACCOUNT_FILE = "gs://wallet-images1/graceful-byway-467117-r0-16d8e26c38c1.json"
+
+    WALLET_API_URL = "https://walletobjects.googleapis.com/walletobjects/v1/genericClass"
+    SCOPES = ["https://www.googleapis.com/auth/wallet_object.issuer"]
+
+
+    # === Load JSON from GCS ===
+    storage_client = storage.Client(credentials=credentials)
+    bucket = storage_client.bucket(BUCKET_NAME)
+    blob = bucket.blob(SA_BLOB_PATH)
+
+    with tempfile.NamedTemporaryFile(mode="w+b", delete=False, suffix=".json") as temp_file:
+            blob.download_to_file(temp_file)
+            SERVICE_ACCOUNT_FILE = temp_file.name
+    # === Authenticate ===
+    credentials = service_account.Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE, scopes=SCOPES
+    )
+    credentials.refresh(Request())
+
+
+    template_wallet = {
+        "id": "3388000000022969024.simple_class",
+        "classTemplateInfo": {
+            "cardTemplateOverride": {
+                "cardRowTemplateInfos": [
+                    {
+                        "twoItems": {
+                            "startItem": {
+                                "firstValue": {
+                                    "fields": [
+                                        {"fieldPath": "object.textModulesData[\"details\"]"}
+                                    ]
+                                }
+                            },
+                            "endItem": {
+                                "firstValue": {
+                                    "fields": [
+                                        {"fieldPath": "object.textModulesData[\"subtitle\"]"}
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+            "detailsTemplateOverride": {
+                "detailsItemInfos": [
+                    {
+                        "item": {
+                            "firstValue": {
+                                "fields": [
+                                    {"fieldPath": "object.textModulesData[\"details\"]"}
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "item": {
+                            "firstValue": {
+                                "fields": [
+                                    {"fieldPath": "object.textModulesData[\"subtitle\"]"}
+                                ]
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "textModulesData": [
+            {"id": "details", "header": "Details", "body": ""},
+            {"id": "subtitle", "header": "Subtitle", "body": ""}
+        ]
+    }
+
+    # === Post to Google Wallet API ===
+    headers = {
+        "Authorization": f"Bearer {credentials.token}",
+        "Content-Type": "application/json",
+    }
+
+    response = requests.post(WALLET_API_URL, headers=headers, json=template_wallet)
+
+    # === Output ===
+    print("Status Code:", response.status_code)
+    print("Response JSON:", response.json())
+
+if __name__=='__main__':
+    testwallet()
